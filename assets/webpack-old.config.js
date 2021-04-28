@@ -5,7 +5,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-var elmSource = __dirname + 'elm';
 
 module.exports = (env, options) => {
   const devMode = options.mode !== 'production';
@@ -26,7 +25,6 @@ module.exports = (env, options) => {
       publicPath: '/js/'
     },
     devtool: devMode ? 'eval-cheap-module-source-map' : undefined,
-    stats: 'verbose',
     module: {
       rules: [
         {
@@ -41,28 +39,17 @@ module.exports = (env, options) => {
           use: [
             MiniCssExtractPlugin.loader,
             'css-loader',
-            'sass-loader'
-            //  {
-            //      loader: 'style-loader'
-            //  },
-            //  {
-            //      loader: 'css-loader',
-            //      options: {
-            //          importLoaders: 1,
-            //      }
-            //  },
-            //  {
-            //      loader: 'postcss-loader'
-            //  }
+            'sass-loader',
           ],
         },
         {
             test: /\.elm$/,
+            exclude: /node_modules/,
             use: {
                 loader: 'elm-webpack-loader',
                 options: {
-//                    pathToElm: 'node_modules/.bin/elm',
-                    cwd: '/Users/meiwalke/Documents/school-stuff/pad_solver/assets/elm'
+                    cwd: path.resolve(__dirname, 'elm'),
+                    pathToElm: 'node_modules/.bin/elm'
                 }
             } 
         }
