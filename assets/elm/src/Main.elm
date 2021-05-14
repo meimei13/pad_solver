@@ -59,6 +59,10 @@ randBoard : Random.Generator (List (List Orb))
 randBoard =
     Random.list 5 (Random.list 6 (randOrb))
 
+randBigg : Random.Generator (List (List Orb))
+randBigg =
+    Random.list 6 (Random.list 7 (randOrb))
+
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( (List.repeat 5 (List.repeat 6 Blue)), (Random.generate Regenerate (randBoard)) )
@@ -72,12 +76,18 @@ subscriptions model =
 
 type Msg 
     = Regenerate Model
+    | New Model
+    | Bigg Model
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Regenerate m ->
             ( m, Cmd.none )
+        New m ->
+            ( (List.repeat 5 (List.repeat 6 Blue)), (Random.generate Regenerate (randBoard)) )
+        Bigg m ->
+            ( (List.repeat 6 (List.repeat 7 Blue)), (Random.generate Regenerate (randBigg)) )
 
 -- View
 orbimage : Orb -> Html msg
@@ -92,12 +102,18 @@ orbimage x =
 
 --view : Model -> Node Msg
 view board =
-    Grid.box [] ( List.map ( \row ->
+    --button [ onClick Regenerate ] [ text "New Board!" ]
+    Grid.box [] (( List.map ( \row ->
         Grid.row [ height (px 100) ] (List.map ( \o ->
             Grid.column [ Grid.exactWidthColumn (px 100) ] 
                 [ orbimage o ] 
         ) row) 
-    ) board) 
+    ) board ) ++ [ 
+        Grid.row [] [ 
+            Grid.column [] [ button [ onClick (New board) ] [ text "Reset!" ] ] 
+            , Grid.column [] [ button [ onClick (Bigg board) ] [ text "7x6 board" ] ]
+        ]
+    ]) 
     |> Html.toUnstyled
 
 --view : Model -> Html Msg
